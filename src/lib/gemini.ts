@@ -31,11 +31,17 @@ export async function generateTextOnly(apiKey: string, prompt: string): Promise<
     return response.text();
   } catch (error: unknown) {
     console.error("Gemini text generation error:", error);
-    let errorMessage = "Unknown error";
-    if (error instanceof Error) {
-        // AxiosErrorなど、より具体的なエラーオブジェクトのプロパティをチェック
-        const anyError = error as any;
-        errorMessage = anyError.response?.data?.error?.message || anyError.message;
+    let errorMessage = "An unknown error occurred";
+    if (typeof error === 'object' && error !== null) {
+        if ('message' in error) {
+            errorMessage = (error as Error).message;
+        }
+        if ('response' in error && typeof (error as any).response === 'object' && (error as any).response !== null) {
+            const responseError = (error as any).response.data?.error?.message;
+            if (responseError) {
+                errorMessage = responseError;
+            }
+        }
     }
     throw new Error(`[GoogleGenerativeAI Error]: ${errorMessage}`);
   }
