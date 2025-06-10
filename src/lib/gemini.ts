@@ -7,6 +7,14 @@ const BASE_URL = "https://generativelanguage.googleapis.com";
 const IMAGE_GENERATION_MODEL_ID = "gemini-2.0-flash-preview-image-generation";
 const TEXT_GENERATION_MODEL_ID = "gemini-1.5-flash-latest";
 
+interface GeminiPart {
+  inlineData?: {
+    mimeType: string;
+    data: string;
+  };
+  text?: string;
+}
+
 /**
  * テキスト生成専用の関数
  * @param apiKey - Google Gemini API Key
@@ -21,9 +29,14 @@ export async function generateTextOnly(apiKey: string, prompt: string): Promise<
     const result = await model.generateContent(prompt);
     const response = await result.response;
     return response.text();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Gemini text generation error:", error);
-    const errorMessage = error.response?.data?.error?.message || error.message || "Unknown error";
+    let errorMessage = "Unknown error";
+    if (error instanceof Error) {
+        // AxiosErrorなど、より具体的なエラーオブジェクトのプロパティをチェック
+        const anyError = error as any;
+        errorMessage = anyError.response?.data?.error?.message || anyError.message;
+    }
     throw new Error(`[GoogleGenerativeAI Error]: ${errorMessage}`);
   }
 }
@@ -34,7 +47,7 @@ export async function generateTextOnly(apiKey: string, prompt: string): Promise<
  * @param textForImage - 画像のコンセプトとなるテキスト
  * @returns 生成された画像データを含むparts配列
  */
-export async function generateImageFromText(apiKey: string, textForImage: string): Promise<any> {
+export async function generateImageFromText(apiKey: string, textForImage: string): Promise<GeminiPart[]> {
   const url = `${BASE_URL}/${API_VERSION}/models/${IMAGE_GENERATION_MODEL_ID}:generateContent?key=${apiKey}`;
   
   const prompt = `こんにちは。
@@ -97,9 +110,12 @@ export async function generateImageFromText(apiKey: string, textForImage: string
     }
     return parts;
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Gemini image generation error:", error);
-    throw error; // エラーを再スローして呼び出し元で処理
+    if (error instanceof Error) {
+        throw error;
+    }
+    throw new Error("An unknown error occurred during image generation.");
   }
 }
 

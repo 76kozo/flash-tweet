@@ -20,6 +20,14 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal, Twitter } from "lucide-react";
 import { toast } from "sonner";
 
+interface GeminiPart {
+  inlineData?: {
+    mimeType: string;
+    data: string;
+  };
+  text?: string;
+}
+
 export function TweetGenerator() {
   const { geminiApiKey } = useApiKeysStore();
   const [keyword, setKeyword] = useState("");
@@ -62,7 +70,7 @@ export function TweetGenerator() {
       const parts = await generateImageFromText(geminiApiKey, visualPrompt);
       let imageBase64 = "";
 
-      parts.forEach((part: any) => {
+      parts.forEach((part: GeminiPart) => {
         if (part.inlineData && part.inlineData.data) {
           imageBase64 = part.inlineData.data;
         }
@@ -74,14 +82,15 @@ export function TweetGenerator() {
       setGeneratedImage(imageBase64);
       setProgress(100);
 
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      if (e.message?.includes("429") && !isRetry) {
+      const errorMessage = e instanceof Error ? e.message : "生成中に不明なエラーが発生しました。";
+      if (errorMessage.includes("429") && !isRetry) {
         setError("レートリミットに達しました。30秒後に再試行します...");
         setTimeout(() => handleGenerate(true), 30000);
       } else {
-        setError(e.message || "生成中に不明なエラーが発生しました。");
-        toast.error("生成エラー", { description: e.message || "生成中に不明なエラーが発生しました。" });
+        setError(errorMessage);
+        toast.error("生成エラー", { description: errorMessage });
       }
     } finally {
       if (!error?.includes("再試行")) {
@@ -113,7 +122,7 @@ export function TweetGenerator() {
       
       let imageBase64 = "";
 
-      parts.forEach((part: any) => {
+      parts.forEach((part: GeminiPart) => {
         if (part.inlineData && part.inlineData.data) {
           imageBase64 = part.inlineData.data;
         }
@@ -125,14 +134,15 @@ export function TweetGenerator() {
       
       setGeneratedImage(imageBase64);
 
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      if (e.message?.includes("429") && !isRetry) {
+      const errorMessage = e instanceof Error ? e.message : "画像の再生成中に不明なエラーが発生しました。";
+      if (errorMessage.includes("429") && !isRetry) {
         setError("レートリミットに達しました。30秒後に画像の再生成を試みます...");
         setTimeout(() => handleRegenerateImage(true), 30000);
       } else {
-        setError(e.message || "画像の再生成中に不明なエラーが発生しました。");
-        toast.error("画像再生成エラー", { description: e.message || "画像の再生成中に不明なエラーが発生しました。" });
+        setError(errorMessage);
+        toast.error("画像再生成エラー", { description: errorMessage });
       }
     } finally {
       if (!error?.includes("再試行")) {
