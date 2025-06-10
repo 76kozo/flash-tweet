@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Flash Tweet ⚡️
 
-## Getting Started
+AIを活用して、X（旧Twitter）への投稿を瞬時に作成・支援するPWA（プログレッシブウェブアプリ）です。
 
-First, run the development server:
+[![Screenshot of Flash Tweet](https://raw.githubusercontent.com/your-username/flash-tweet/main/docs/screenshot.png)](https://raw.githubusercontent.com/your-username/flash-tweet/main/docs/screenshot.png)
+*(Note: 上のスクリーンショットURLは、リポジトリ作成後に実際のパスに合わせて更新してください。)*
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ 主な機能
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **AIによるツイート生成**: キーワードや短い文章を入力するだけで、Geminiが魅力的なツイート本文と、内容にマッチした画像を生成します。
+- **プロンプト変換シールド**: 生成された日本語の本文を、画像生成AIに最適化された英語の「ビジュアルプロンプト」へ自動的に"翻訳"。これにより、プロンプトの指示文が画像に混入することなく、高品質な画像のみを生成します。
+- **柔軟な編集機能**:
+  - AIが生成した本文は、投稿前に自由に編集できます。
+  - テキストはそのままに、**画像だけを何度でも再生成**することが可能です。
+- **ワンクリック投稿支援**:
+  - 「Xに投稿する」ボタン一つで、以下の動作を自動で行います。
+    1. 生成・編集したツイート本文をクリップボードへコピー。
+    2. 生成された画像をPCにダウンロード。
+    3. 本文が入力された状態でXの投稿画面を新しいタブで表示。
+- **PWA対応**: スマートフォンやデスクトップにアプリとしてインストールして、素早くアクセスできます。
+- **セキュアなAPIキー管理**: APIキーは、お使いのブラウザのローカルストレージにのみ保存され、外部サーバーには送信されません。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ 使用技術
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **フレームワーク**: [Next.js](https://nextjs.org/) (App Router)
+- **言語**: [TypeScript](https://www.typescriptlang.org/)
+- **AIモデル**:
+  - **テキスト生成**: Google [Gemini 1.5 Flash](https://deepmind.google/technologies/gemini/flash/)
+  - **画像生成**: Google [Gemini Pro Vision](https://deepmind.google/technologies/gemini/) (REST API)
+- **UI**: [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/)
+- **状態管理**: [Zustand](https://github.com/pmndrs/zustand)
+- **通知**: [Sonner](https://sonner.emilkowal.ski/)
+- **PWA**: [next-pwa](https://github.com/shadowwalker/next-pwa)
 
-## Learn More
+## 🚀 セットアップと実行方法
 
-To learn more about Next.js, take a look at the following resources:
+1.  **リポジトリをクローン**:
+    ```bash
+    git clone https://github.com/your-username/flash-tweet.git
+    cd flash-tweet
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2.  **依存関係をインストール**:
+    ```bash
+    npm install
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3.  **環境変数を設定**:
+    - `.env.local.example` をコピーして `.env.local` という名前のファイルを作成します。
+    - ファイル内に、お使いのGoogle Gemini APIキーを設定してください。
+      ```
+      GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+      ```
 
-## Deploy on Vercel
+4.  **開発サーバーを起動**:
+    ```bash
+    npm run dev
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5.  **ブラウザで開く**:
+    - [http://localhost:3000](http://localhost:3000) にアクセスします。
+    - 画面の指示に従ってAPIキーを保存すれば、すぐに利用を開始できます。
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📜 ライセンス
+
+このプロジェクトは [MIT License](LICENSE) のもとで公開されています。
