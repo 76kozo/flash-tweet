@@ -32,16 +32,14 @@ export async function generateTextOnly(apiKey: string, prompt: string): Promise<
   } catch (error: unknown) {
     console.error("Gemini text generation error:", error);
     let errorMessage = "An unknown error occurred";
-    if (typeof error === 'object' && error !== null) {
-        if ('message' in error) {
-            errorMessage = (error as Error).message;
-        }
-        if ('response' in error && typeof (error as any).response === 'object' && (error as any).response !== null) {
-            const responseError = (error as any).response.data?.error?.message;
-            if (responseError) {
-                errorMessage = responseError;
-            }
-        }
+    if (error instanceof Error) {
+        errorMessage = error.message;
+    }
+    // エラーオブジェクト内の詳細なメッセージを取得するため、一時的にany型を使用
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const anyError = error as any;
+    if (anyError?.response?.data?.error?.message) {
+      errorMessage = anyError.response.data.error.message;
     }
     throw new Error(`[GoogleGenerativeAI Error]: ${errorMessage}`);
   }
